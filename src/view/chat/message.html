@@ -1,0 +1,106 @@
+{{#if message.isDayMarker}}
+<div class="daymarker">
+  <div class="label-wrapper">
+    <div class="label">{{message.dayTime}}</div>
+  </div>
+  <hr class="line">
+</div>
+{{/if}}
+{{#isFirstUnread messageList message}}
+<div id="unread-marker">
+  <div class="label-wrapper">
+    <div class="label">new messages</div>
+  </div>
+  <hr class="line">
+</div>
+{{/isFirstUnread}}
+<div id="{{normalizeId message.id}}" class="msg {{#if message.isFolded}}folded{{/if}}">
+  <div class="avatar">
+    {{#if message.isFolded}}
+    <div class="dummy"></div>
+    {{else}}
+    <img width="36" height="36" src="{{message.user.avatar}}"/>
+    {{/if}}
+  </div>
+  <div class="content">
+    <div class="action-menu">
+      {{~#canStartThread messageList message~}}
+      <a href="#" onclick="wey.openThread('{{message.id}}'); return false" title="Start thread"><i class="icon-comment"></i></a>
+      {{~/canStartThread~}}<a class="toggle-star" href="#" onclick="wey.setMessageStar('{{message.id}}', {{message.timestamp}}, {{revert message.hasStar}}); return false" title="Star message"><i class="{{#if message.hasStar}}icon-thumbs-up-alt{{else}}icon-thumbs-up{{/if}}"></i></a>
+    </div>
+    {{#unless message.isFolded}}
+    <div class="sender">
+      <div class="name">{{message.user.name}}</div>
+      {{#if message.user.statusEmoji}}
+        {{{message.user.statusEmoji}}}
+      {{/if}}
+      <div class="time">{{message.shortTime}}</div>
+    </div>
+    {{/unless}}
+    <div class="text">
+      {{{message.text}}}
+      {{#if message.isEdited}}<span class="edited-label">(edited)</span>{{/if}}
+    </div>
+    {{#each message.attachments}}
+    {{#if preText}}
+    <div class="text">
+      {{{preText}}}
+    </div>
+    {{/if}}
+    <div class="attachment">
+      <div class="border" style="background-color: {{color}}"><div style="width: 4px"></div></div>
+      <div class="content">
+        {{#if author}}
+        <div class="sender">
+          <img width="16" height="16" src="{{authorIcon}}"/>
+          <a href="{{authorLink}}">{{author}}</a>
+        </div>
+        {{/if}}
+        {{#if title}}
+        <div class="title"><a href="{{titleLink}}">{{title}}</a></div>
+        {{/if}}
+        {{#if text}}
+        <div class="text">
+          {{{text}}}
+        </div>
+        {{/if}}
+        {{#if image}}
+        <div class="image">
+          <a href="{{imageUrl}}"><img width="{{imageWidth}}"{{#if imageHeight}} height="{{imageHeight}}"{{/if}} src="{{image}}"/></a>
+        </div>
+        {{/if}}
+      </div>
+    </div>
+    {{/each}}
+    {{#each message.files}}
+    {{#if image}}
+    <div class="image">
+      <div class="name">{{name}}</div>
+      <img {{#if isImageCached}}src="{{image}}"{{else}}class="delayed-image" data-url="{{image}}"{{/if}} width="{{imageWidth}}" height="{{imageHeight}}"/>
+    </div>
+    {{else}}
+    <div onclick="wey.openLink('{{downloadUrl}}'); return false" class="file">
+      <div class="icon"><i class="icon-doc"></i></div>
+      <div class="name">{{name}}</div>
+      <div class="type">{{readableSize}} {{typeName}}</div>
+    </div>
+    {{/if}}
+    {{/each}}
+    {{#if message.reactions}}
+    <div class="reactions">
+    {{#each message.reactions}}
+    <button onclick="wey.setMessageReaction('{{../message.id}}', {{../message.timestamp}}, '{{name}}', {{revert reacted}}); return false" {{#if reacted}}class="reacted"{{/if}}>{{{content}}}<span class="count">{{count}}</span></button>
+    {{/each}}
+    </div>
+    {{/if}}
+    {{#isChannel messageList}}{{#if message.isThreadParent}}
+    <div onclick="wey.openThread('{{message.id}}'); return false" class="replies-wrapper"><div class="replies">
+      {{#each message.replyUsers}}
+      <img width="24" height="24" src="{{avatar}}"/>
+      {{/each}}
+      <a href="#" onclick="return false">{{message.replyCount}} replies</a>
+      <span class="description">View thread</span>
+    </div></div>
+    {{/if}}{{/isChannel}}
+  </div>
+</div>

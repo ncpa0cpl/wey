@@ -1,18 +1,19 @@
-class Attachment {
-  constructor(text) {
-    this.text = text
-    this.preText = null
-    this.color = '#e8e8e8'
-    this.title = null
-    this.titleLink = null
-    this.author = null
-    this.authorLink = null
-    this.authorIcon = null
-    this.image = null
-    this.imageUrl = null
-    this.imageWidth = null
-    this.imageHeight = null
+export class Attachment {
+  text: string;
+
+  preText: string | null = null;
+  color = "#e8e8e8";
+  title: string | null = null;
+  titleLink: string | null = null;
+  author: string | null = null;
+  authorLink: string | null = null;
+  authorIcon: string | null = null;
+  image: string | null = null;
+  imageUrl: string | null = null;
+  imageWidth: string | null = null;
+  imageHeight: string | null = null;
+
+  constructor(text: string) {
+    this.text = text;
   }
 }
-
-module.exports = Attachment

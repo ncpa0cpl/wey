@@ -1,9 +1,11 @@
-import AppMenu from "../view/app-menu";
 import gui from "gui";
+import AppMenu from "../view/app-menu";
+
+export type WindowManagerConfig = {};
 
 class WindowManagerImpl {
   windows: any[];
-  config: {};
+  config: WindowManagerConfig;
   appMenu?: AppMenu;
   menubars?: any[];
 
@@ -23,7 +25,7 @@ class WindowManagerImpl {
     }
   }
 
-  initWithConfig(config) {
+  initWithConfig(config: WindowManagerConfig) {
     this.config = config;
   }
 

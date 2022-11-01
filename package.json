@@ -32,7 +32,7 @@
     "fs-extra": "9.0.1",
     "gui": "0.10.3",
     "keytar": "5.4.0",
-    "mini-signals": "1.1.1",
+    "mini-signals": "^1.2.0",
     "opn": "5.3.0",
     "readable-size": "0.2.0",
     "sanitize-html": "1.22.1",

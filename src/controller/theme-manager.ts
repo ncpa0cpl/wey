@@ -1,9 +1,11 @@
-const path = require('path')
+import type { Theme } from "../theme/dark";
+import { darkTheme } from "../theme/dark";
 
-class ThemeManager {
+class ThemeManagerImpl {
+  theme: Theme;
   constructor() {
-    this.theme = require('../theme/dark')
+    this.theme = darkTheme;
   }
 }
 
-module.exports = new ThemeManager
+export const themeManager = new ThemeManagerImpl();

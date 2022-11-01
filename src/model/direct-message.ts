@@ -1,39 +1,39 @@
-const Signal = require('mini-signals')
-const MessageList = require('./message-list')
+import Signal from "mini-signals";
+import MessageList from "./message-list";
 
 class DirectMessage extends MessageList {
   constructor(account, id, name) {
-    super(account, 'dm', id)
-    this.name = name
-    this.userId = null
-    this.isMultiParty = false
-    this.isAway = false
+    super(account, "dm", id);
+    this.name = name;
+    this.userId = null;
+    this.isMultiParty = false;
+    this.isAway = false;
 
-    this.onUpdateAwayState = new Signal()
+    this.onUpdateAwayState = new Signal();
   }
 
   setAway(isAway) {
     if (this.isAway !== isAway) {
-      this.isAway = isAway
-      this.onUpdateAwayState.dispatch()
+      this.isAway = isAway;
+      this.onUpdateAwayState.dispatch();
     }
   }
 
   markRead() {
-    super.markRead()
+    super.markRead();
     if (!this.account.isRead) {
-      this.account.updateReadState()
-      this.account.updateMentions()
+      this.account.updateReadState();
+      this.account.updateMentions();
     }
   }
 
   async dispatchMessage(message) {
-    await super.dispatchMessage(message)
+    await super.dispatchMessage(message);
     if (!this.isDisplaying) {
-      this.account.setReadState(false)
-      this.account.updateMentions()
+      this.account.setReadState(false);
+      this.account.updateMentions();
     }
   }
 }
 
-module.exports = DirectMessage
+module.exports = DirectMessage;

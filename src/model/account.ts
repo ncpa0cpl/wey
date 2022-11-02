@@ -1,22 +1,34 @@
 import Signal from "mini-signals";
-
 import { accountManager } from "../controller/account-manager";
+import type { Channel } from "./channel";
+import type { SerializedConfig } from "./message-list";
+import type { Service } from "./service";
+import type { User } from "./user";
 
-export class Account {
-  service: any;
+interface AccountConfig {
   id: string;
   name: string;
-  icon: null;
+  service: null | string;
+  icon: string;
+  currentChannelId: string;
+  channels: Array<SerializedConfig>;
+}
+
+export class Account {
+  service: Service;
+  id: string;
+  name: string;
+  icon: string | null;
   url: string;
   authorizationHeader: any;
-  channels: any[];
-  channelsConfig: any[];
+  channels: Channel[];
+  channelsConfig: Record<string, SerializedConfig>;
   dms: any[];
   emoji: any;
   currentChannelId: string | null;
   currentUserId: string | null;
   currentUserName: string | null;
-  users: any;
+  users: Record<string, User>;
   isRead: boolean;
   mentions: number;
   status: string;
@@ -32,7 +44,7 @@ export class Account {
   onOpenDM = new Signal();
   onCloseDM = new Signal();
 
-  constructor(service, id, name) {
+  constructor(service: Service, id: string, name: string) {
     this.service = service;
     this.id = id;
     this.name = name;
@@ -56,7 +68,9 @@ export class Account {
   }
 
   serialize() {
-    const config = {
+    const config: AccountConfig = {
+      currentChannelId: null,
+      icon: null,
       id: this.id,
       name: this.name,
       channels: null as null | any[],
@@ -64,11 +78,11 @@ export class Account {
     };
 
     if (this.currentChannelId) {
-      Object.assign(config, { currentChannelId: this.currentChannelId });
+      config.currentChannelId = this.currentChannelId;
     }
 
     if (this.icon) {
-      Object.assign(config, { icon: this.icon });
+      config.icon = this.icon;
     }
 
     for (const messageList of this.channels.concat(this.dms)) {
@@ -81,16 +95,19 @@ export class Account {
     return config;
   }
 
-  deserialize(config) {
+  deserialize(config: AccountConfig) {
     if (config.icon) this.icon = config.icon;
     if (config.currentChannelId)
       this.currentChannelId = config.currentChannelId;
     // Save the config of channels, since channels are loaded later.
     if (config.channels)
-      this.channelsConfig = config.channels.reduce((r, i) => {
-        r[i.id] = i;
-        return r;
-      }, {});
+      this.channelsConfig = config.channels.reduce(
+        (r: Record<string, SerializedConfig>, i) => {
+          r[i.id] = i;
+          return r;
+        },
+        {}
+      );
   }
 
   channelsLoaded() {
@@ -106,35 +123,35 @@ export class Account {
     this.onUpdateChannels.dispatch(this.channels);
   }
 
-  findChannelById(id) {
+  findChannelById(id: string) {
     let channel = this.channels.find((c) => c.id == id);
     if (!channel) channel = this.dms.find((c) => c.id == id);
     return channel;
   }
 
   // DMs treated as channels.
-  findChannelByUserId(id) {
+  findChannelByUserId(id: string) {
     return this.dms.find((c) => c.userId === id);
   }
 
-  findUserById(id) {
+  findUserById(id: string) {
     return this.users[id];
   }
 
   computeReadState() {
-    const compute = (r, c) => {
+    const compute = (r: boolean, c: Channel) => {
       return c.isRead || c.isMuted ? r : false;
     };
     return this.channels.reduce(compute, this.dms.reduce(compute, true));
   }
 
   // Save user for ID lookup
-  saveUser(newUser) {
+  saveUser(newUser: User) {
     this.users[newUser.id] = newUser;
     return newUser;
   }
 
-  setReadState(read) {
+  setReadState(read: boolean) {
     if (this.isRead !== read) {
       this.isRead = read;
       this.onUpdateReadState.dispatch(this.isRead);
@@ -149,7 +166,7 @@ export class Account {
   }
 
   updateMentions() {
-    const compute = (m, c) => {
+    const compute = (m: number, c: Channel) => {
       return m + c.mentions;
     };
     const mentions = this.channels.reduce(compute, this.dms.reduce(compute, 0));
@@ -172,11 +189,11 @@ export class Account {
     throw new Error("Should be implemented by subclass");
   }
 
-  async join(channel) {
+  async join(channel: Channel) {
     throw new Error("Should be implemented by subclass");
   }
 
-  async leave(channel) {
+  async leave(channel: Channel) {
     throw new Error("Should be implemented by subclass");
   }
 }

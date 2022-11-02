@@ -1,39 +1,26 @@
 import Signal from "mini-signals";
 import type { Account } from "./account";
+import type { Message } from "./message";
+import type { Reaction } from "./reaction";
 
 const STOP_RECEIVING_TIMEOUT = 60 * 60 * 1000; // 1 hour
 const MARK_TIMEOUT = 5 * 1000; // 5 seconds
 
 const CACHE_MESSAGES_LIMIT = 300;
 
-interface Reaction {
-  name: string;
-  reacted: boolean;
-  count: number;
-}
+interface Draft {}
 
-interface Message {
+export interface SerializedConfig {
   id: string;
-  user: {
-    id: string;
-  };
-  date: Date;
-  timestamp: number;
-  isFolded: boolean;
-  hasMention: boolean;
-  isDayMarker: boolean;
-  hasStar: boolean;
-  reactions: Array<Reaction>;
-
-  setDayMarker(): any;
+  draft: Draft;
 }
 
-class MessageList {
+export class MessageList {
   account: Account;
   type: string;
   id: string;
   messages: Message[];
-  draft: null;
+  draft: Draft;
   mentions: number;
 
   isMuted: boolean;
@@ -101,12 +88,12 @@ class MessageList {
     this.markTimer = null;
   }
 
-  serialize() {
+  serialize(): SerializedConfig {
     if (!this.draft) return null;
     return { id: this.id, draft: this.draft };
   }
 
-  deserialize(config) {
+  deserialize(config: SerializedConfig) {
     this.draft = config.draft;
   }
 
@@ -164,7 +151,7 @@ class MessageList {
     this.messages = [];
   }
 
-  setDraft(draft) {
+  setDraft(draft: Draft) {
     this.draft = draft;
   }
 
@@ -378,5 +365,3 @@ class MessageList {
       this.firstUnreadTs = m.timestamp;
   }
 }
-
-module.exports = MessageList;

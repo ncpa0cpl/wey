@@ -1,16 +1,17 @@
-class Service {
-  constructor(id, name) {
-    this.id = id
-    this.name = name
+export class Service {
+  id: string;
+  name: string;
+
+  constructor(id: string, name: string) {
+    this.id = id;
+    this.name = name;
   }
 
-  login(callback) {
-    throw new Error('This method should be implemented by clients')
+  login(callback: () => void) {
+    throw new Error("This method should be implemented by clients");
   }
 
-  createAccount(id, name, token) {
-    throw new Error('This method should be implemented by clients')
+  createAccount(id: string, name: string, token: string) {
+    throw new Error("This method should be implemented by clients");
   }
 }
-
-module.exports = Service

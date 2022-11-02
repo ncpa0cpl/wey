@@ -1,5 +1,8 @@
+import { MessageList } from "./message-list";
 import type { Account } from "./account";
-import MessageList from "./message-list";
+import type { Message } from "./message";
+import type { Reaction } from "./reaction";
+import type { Thread } from "./thread";
 
 export class Channel extends MessageList {
   name: string;
@@ -7,9 +10,9 @@ export class Channel extends MessageList {
   isMember: boolean;
   isPrivate: boolean;
   isDefault: boolean;
-  openedThreads: any[];
+  openedThreads: Thread[];
 
-  constructor(account: Account, type, id, name: string) {
+  constructor(account: Account, type: string, id: string, name: string) {
     super(account, type, id);
     this.name = name;
     this.description = "(No description)";
@@ -47,31 +50,34 @@ export class Channel extends MessageList {
     if (!this.isMuted && this.account.isRead) this.account.setReadState(false);
   }
 
-  updateMessageStar(id, timestamp, hasStar) {
+  updateMessageStar(id: string, timestamp: number, hasStar: boolean) {
     const message = super.updateMessageStar(id, timestamp, hasStar);
     if (message && message.threadId) {
       const thread = this.findThread(message.threadId);
       if (thread) thread.updateMessageStar(id, timestamp, hasStar);
     }
+    return message;
   }
 
-  reactionAdded(id, timestamp, reaction) {
+  reactionAdded(id: string, timestamp: number, reaction: Reaction) {
     const message = super.reactionAdded(id, timestamp, reaction);
     if (message && message.threadId) {
       const thread = this.findThread(message.threadId);
       if (thread) thread.reactionAdded(id, timestamp, reaction);
     }
+    return message;
   }
 
-  reactionRemoved(id, timestamp, reaction) {
+  reactionRemoved(id: string, timestamp: number, reaction: Reaction) {
     const message = super.reactionRemoved(id, timestamp, reaction);
     if (message && message.threadId) {
       const thread = this.findThread(message.threadId);
       if (thread) thread.reactionRemoved(id, timestamp, reaction);
     }
+    return message;
   }
 
-  async dispatchMessage(message) {
+  async dispatchMessage(message: Message) {
     await super.dispatchMessage(message);
     if (!this.isDisplaying) this.account.updateMentions();
   }

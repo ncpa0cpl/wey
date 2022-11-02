@@ -1,21 +1,30 @@
-const readableSize = require('readable-size')
+import readableSize from "readable-size";
 
-class File {
-  constructor(name, size, type) {
-    this.name = name
-    this.size = size
-    this.type = type
-    this.isImageCached = false
-    this.downloadUrl = null
-    this.image = null
-    this.imageWidth = null
-    this.imageHeight = null
+export class File {
+  name: string;
+  size: number;
+  type: string;
+  isImageCached: boolean;
+  downloadUrl: string | null;
+  image: null;
+  imageWidth: number;
+  imageHeight: number;
+  readableSize: string;
+  typeName: string;
 
-    this.readableSize = readableSize(size)
+  constructor(name: string, size: number, type: string) {
+    this.name = name;
+    this.size = size;
+    this.type = type;
+    this.isImageCached = false;
+    this.downloadUrl = null;
+    this.image = null;
+    this.imageWidth = null;
+    this.imageHeight = null;
+
+    this.readableSize = readableSize(size);
 
     // Certain services provide a pretty name for file types.
-    this.typeName = type
+    this.typeName = type;
   }
 }
-
-module.exports = File
